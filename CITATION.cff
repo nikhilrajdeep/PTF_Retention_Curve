@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use this software or the trained models, please cite it as below."
+title: "Inverse-PTF Explorer: physics-constrained deep-ensemble pedotransfer functions for soil water retention and hydraulic conductivity"
+type: software
+authors:
+  - family-names: Deep
+    given-names: Nikhil Raj
+    affiliation: "Soil, Water, and Ecosystem Sciences, University of Florida"
+repository-code: "https://github.com/nikhilrajdeep/PTF_Retention_Curve"
+license: MIT
+version: 1.0.0
+date-released: 2026-10-19
+keywords:
+  - pedotransfer function
+  - soil water retention curve
+  - hydraulic conductivity
+  - van Genuchten
+  - Peters-Durner-Iden
+  - physics-informed machine learning
+  - deep ensemble
+  - SOLUS
+  - plant-available water
+references:
+  - type: article
+    title: "Soil landscapes of the United States (SOLUS): developing predictive soil property maps of the conterminous United States using hybrid training sets"
+    authors:
+      - family-names: Nauman
+        given-names: Travis W.
+      - family-names: Kienast-Brown
+        given-names: Suzann
+      - family-names: Roecker
+        given-names: Stephen M.
+      - family-names: Brungard
+        given-names: Colby
+      - family-names: White
+        given-names: David
+      - family-names: Philippe
+        given-names: Jessica
+      - family-names: Thompson
+        given-names: James A.
+    journal: "Soil Science Society of America Journal"
+    year: 2024
+    doi: "10.1002/saj2.20769"

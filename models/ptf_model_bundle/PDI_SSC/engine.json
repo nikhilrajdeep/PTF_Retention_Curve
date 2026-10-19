@@ -1,0 +1,108 @@
+{
+  "run": "PDI_SSC",
+  "family": "PDI",
+  "input_set": "SSC",
+  "features": [
+    "Sand_pct",
+    "Silt_pct",
+    "Clay_pct",
+    "Depth_harm_cm"
+  ],
+  "n_members": 10,
+  "n_linear": 3,
+  "activation": "relu",
+  "hidden": 96,
+  "layers": 2,
+  "scaler": {
+    "min_": [
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.105263113975525
+    ],
+    "scale_": [
+      0.019999999552965164,
+      0.020703934133052826,
+      0.025220679119229317,
+      0.021052632480859756
+    ],
+    "data_min_": [
+      0.0,
+      0.0,
+      0.0,
+      5.0
+    ],
+    "data_max_": [
+      100.0,
+      96.5999984741211,
+      79.30000305175781,
+      100.0
+    ],
+    "feature_range": [
+      -1,
+      1
+    ]
+  },
+  "bounds": {
+    "tr_lo": 0.0,
+    "tr_hi": 0.65,
+    "ts_lo": 0.1,
+    "ts_hi": 0.85,
+    "ts_gap": 0.01,
+    "a_lo": 1e-05,
+    "a_hi": 0.5,
+    "n_lo": 1.01,
+    "n_hi": 8.0,
+    "k_lo": 0.0001,
+    "k_hi": 1000000.0,
+    "om_lo": 0.0,
+    "om_hi": 1.0,
+    "lam_lo": -1.0,
+    "lam_hi": 10.0,
+    "h0_pf": 6.8,
+    "h0_cm": 6309573.44480193,
+    "film_a": -1.5
+  },
+  "physics": {
+    "retention": "complete_VG_PDI",
+    "conductivity": "complete_PDI_capillary_plus_film_logspace",
+    "m_relation": "m=1-1/n",
+    "ha_relation": "ha=1/alpha",
+    "h0_pf": 6.8,
+    "h0_cm": 6309573.44480193,
+    "film_a": -1.5,
+    "theta_r_bounds": [
+      0.0,
+      0.65
+    ],
+    "theta_s_bounds": [
+      0.1,
+      0.85
+    ],
+    "theta_s_minus_theta_r_min": 0.01,
+    "alpha_bounds_1_per_cm": [
+      1e-05,
+      0.5
+    ],
+    "n_bounds": [
+      1.01,
+      8.0
+    ],
+    "Ksat_bounds_cm_d": [
+      0.0001,
+      1000000.0
+    ],
+    "omega_bounds": [
+      0.0,
+      1.0
+    ],
+    "lambda_bounds": [
+      -1.0,
+      10.0
+    ]
+  },
+  "uncertainty": {
+    "new_prediction": "10-member deep-ensemble mean +/- 1.96 SD (model/epistemic ensemble spread)",
+    "test_metrics": "Group_ID cluster bootstrap, 1000 repetitions"
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "created": "2026-09-14T18:52:53",
+  "source": "C:\\Users\\Nikhil\\Downloads\\Final_PTF",
+  "runs": {
+    "VGM_SSC": {
+      "status": "ok",
+      "family": "VGM",
+      "family_label": "Classic VG (van Genuchten-Mualem)",
+      "input_set": "SSC",
+      "input_set_label": "Sand, Silt, Clay",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "classical_constrained_VG_1980",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VGM_DNN_SSC_new",
+      "size_mb": 2.1
+    },
+    "VGM_SSCBD": {
+      "status": "ok",
+      "family": "VGM",
+      "family_label": "Classic VG (van Genuchten-Mualem)",
+      "input_set": "SSCBD",
+      "input_set_label": "Sand, Silt, Clay, Bulk density",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "classical_constrained_VG_1980",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VGM_DNN_SSCBD_new",
+      "size_mb": 0.25
+    },
+    "VGM_SSCOC": {
+      "status": "ok",
+      "family": "VGM",
+      "family_label": "Classic VG (van Genuchten-Mualem)",
+      "input_set": "SSCOC",
+      "input_set_label": "Sand, Silt, Clay, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "classical_constrained_VG_1980",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VGM_DNN_SSCOC_new",
+      "size_mb": 0.25
+    },
+    "VGM_SSCBDOC": {
+      "status": "ok",
+      "family": "VGM",
+      "family_label": "Classic VG (van Genuchten-Mualem)",
+      "input_set": "SSCBDOC",
+      "input_set_label": "Sand, Silt, Clay, Bulk density, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "classical_constrained_VG_1980",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VGM_DNN_SSCBDOC_new",
+      "size_mb": 2.11
+    },
+    "VGDRY_SSC": {
+      "status": "ok",
+      "family": "VGDRY",
+      "family_label": "Enhanced VG (dry-end corrected)",
+      "input_set": "SSC",
+      "input_set_label": "Sand, Silt, Clay",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "dry_end_corrected_VG",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VG_DryCorrected_DNN_SSC",
+      "size_mb": 0.47
+    },
+    "VGDRY_SSCBD": {
+      "status": "ok",
+      "family": "VGDRY",
+      "family_label": "Enhanced VG (dry-end corrected)",
+      "input_set": "SSCBD",
+      "input_set_label": "Sand, Silt, Clay, Bulk density",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "dry_end_corrected_VG",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VG_DryCorrected_DNN_SSCBD",
+      "size_mb": 2.11
+    },
+    "VGDRY_SSCOC": {
+      "status": "ok",
+      "family": "VGDRY",
+      "family_label": "Enhanced VG (dry-end corrected)",
+      "input_set": "SSCOC",
+      "input_set_label": "Sand, Silt, Clay, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "dry_end_corrected_VG",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VG_DryCorrected_DNN_SSCOC",
+      "size_mb": 2.11
+    },
+    "VGDRY_SSCBDOC": {
+      "status": "ok",
+      "family": "VGDRY",
+      "family_label": "Enhanced VG (dry-end corrected)",
+      "input_set": "SSCBDOC",
+      "input_set_label": "Sand, Silt, Clay, Bulk density, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "dry_end_corrected_VG",
+      "conductivity": "classical_VG_Mualem_logspace",
+      "source_folder": "VG_DryCorrected_DNN_SSCBDOC",
+      "size_mb": 2.11
+    },
+    "PDI_SSC": {
+      "status": "ok",
+      "family": "PDI",
+      "family_label": "PDI (Peters-Durner-Iden)",
+      "input_set": "SSC",
+      "input_set_label": "Sand, Silt, Clay",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "complete_VG_PDI",
+      "conductivity": "complete_PDI_capillary_plus_film_logspace",
+      "source_folder": "PDI_DNN_SSC",
+      "size_mb": 0.47
+    },
+    "PDI_SSCBD": {
+      "status": "ok",
+      "family": "PDI",
+      "family_label": "PDI (Peters-Durner-Iden)",
+      "input_set": "SSCBD",
+      "input_set_label": "Sand, Silt, Clay, Bulk density",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "complete_VG_PDI",
+      "conductivity": "complete_PDI_capillary_plus_film_logspace",
+      "source_folder": "PDI_DNN_SSCBD",
+      "size_mb": 0.47
+    },
+    "PDI_SSCOC": {
+      "status": "ok",
+      "family": "PDI",
+      "family_label": "PDI (Peters-Durner-Iden)",
+      "input_set": "SSCOC",
+      "input_set_label": "Sand, Silt, Clay, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "complete_VG_PDI",
+      "conductivity": "complete_PDI_capillary_plus_film_logspace",
+      "source_folder": "PDI_DNN_SSCOC",
+      "size_mb": 0.78
+    },
+    "PDI_SSCBDOC": {
+      "status": "ok",
+      "family": "PDI",
+      "family_label": "PDI (Peters-Durner-Iden)",
+      "input_set": "SSCBDOC",
+      "input_set_label": "Sand, Silt, Clay, Bulk density, Organic carbon",
+      "features": [
+        "Sand_pct",
+        "Silt_pct",
+        "Clay_pct",
+        "BD_g_cm3",
+        "OC_pct",
+        "Depth_harm_cm"
+      ],
+      "n_members": 10,
+      "retention": "complete_VG_PDI",
+      "conductivity": "complete_PDI_capillary_plus_film_logspace",
+      "source_folder": "PDI_DNN_SSCBDOC",
+      "size_mb": 0.48
+    }
+  }
+}

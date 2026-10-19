@@ -1,0 +1,18 @@
+{
+  "config": {
+    "hidden": 128,
+    "layers": 4,
+    "activation": "tanh",
+    "dropout": 0.0,
+    "lr": 0.0008604113886542348,
+    "weight_decay": 2.8543931861360314e-05,
+    "scheduler": "none",
+    "theta_scale": 0.05,
+    "dry_weight": 10.0,
+    "curve_mix": 0.25,
+    "lambda_ksat": 1.0,
+    "lambda_kh": 2.0,
+    "lambda_prior": 0.0
+  },
+  "final_epochs": 300
+}

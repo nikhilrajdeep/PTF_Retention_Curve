@@ -1,0 +1,176 @@
+{
+  "features": [
+    "Sand_pct",
+    "Silt_pct",
+    "Clay_pct",
+    "BD_g_cm3",
+    "Depth_harm_cm"
+  ],
+  "best_config": {
+    "hidden": 128,
+    "layers": 4,
+    "activation": "relu",
+    "dropout": 0.05,
+    "lr": 0.0021940777163038613,
+    "weight_decay": 0.0002399754496020825,
+    "scheduler": "none",
+    "theta_scale": 0.05,
+    "dry_weight": 4.0,
+    "curve_mix": 0.25,
+    "lambda_ksat": 1.0,
+    "lambda_kh": 0.5,
+    "lambda_prior": 0.0
+  },
+  "final_epochs": 175,
+  "ensemble_members": 10,
+  "physics": {
+    "retention": "dry_end_corrected_VG",
+    "dry_correction": {
+      "equation": "theta=(theta_s-theta_r)*Se + theta_r*Fdry",
+      "Fdry": "1-ln(1+(alpha*h)^c)/ln(1+(alpha*10^7)^c)",
+      "c": "1+0.1/n",
+      "dry_reference_pF": 6.8
+    },
+    "conductivity": "classical_VG_Mualem_logspace",
+    "m_relation": "m=1-1/n",
+    "theta_r_bounds": [
+      0.0,
+      0.25
+    ],
+    "theta_s_bounds": [
+      0.1,
+      0.85
+    ],
+    "theta_s_minus_theta_r_min": 0.0001,
+    "alpha_bounds_1_per_cm": [
+      1e-05,
+      0.5
+    ],
+    "n_bounds": [
+      1.01,
+      8.0
+    ],
+    "Ksat_bounds_cm_d": [
+      0.0001,
+      1000000.0
+    ],
+    "tau_bounds": [
+      -1.0,
+      10.0
+    ],
+    "rosetta_mualem_L_fixed": 0.5
+  },
+  "loss": {
+    "family": "Huber",
+    "lambda_SWRC": 1.0,
+    "K_h_space": "log10",
+    "Ksat_space": "log10",
+    "logK_huber_scale": 1.0,
+    "dry_pF_cut": 4.17,
+    "hybrid_normalization": "(1-gamma)*point_normalized + gamma*curve_normalized",
+    "equifinality_regularization": {
+      "type": "weak_curveuid_specific_fitted_parameter_prior",
+      "source_file": "C:\\Users\\nikhildeep\\Downloads\\PTF\\Curve_UID_Fitted_VGM_VGDry_PDI_Parameters.xlsx",
+      "source_sheet": "Parameters_Long",
+      "source_filter": "Model=VG_DryCorrected and Split=Training only",
+      "source_columns_only": [
+        "Curve_UID",
+        "Split",
+        "Model",
+        "theta_r",
+        "theta_s",
+        "log10_alpha",
+        "n",
+        "tau"
+      ],
+      "parameters": [
+        "theta_r",
+        "theta_s",
+        "log10_alpha",
+        "n",
+        "tau"
+      ],
+      "target": "fitted VG_DryCorrected parameter for the same Curve_UID",
+      "quality_mask": "finite numeric values only; no near-bound filtering and no theta-gap prior filtering",
+      "scale": "max(IQR, 5% hard range); fold-specific training-only during CV, all development/training rows for final ensemble",
+      "boundary_QC_columns_required": false,
+      "Ksat_regularized": false,
+      "lambda_prior": 0.0,
+      "final_training_scales": {
+        "theta_r": 0.07346078753471375,
+        "theta_s": 0.07210582494735718,
+        "log10_alpha": 0.2642441987991333,
+        "n": 2.265125274658203,
+        "tau": 6.193614959716797
+      },
+      "coverage": [
+        {
+          "Parameter": "theta_r",
+          "SourceColumn": "theta_r",
+          "N_VGDry_training_rows": 3979,
+          "N_numeric_available": 3979,
+          "N_used_for_prior": 3979,
+          "N_masked_or_missing": 0
+        },
+        {
+          "Parameter": "theta_s",
+          "SourceColumn": "theta_s",
+          "N_VGDry_training_rows": 3979,
+          "N_numeric_available": 3979,
+          "N_used_for_prior": 3979,
+          "N_masked_or_missing": 0
+        },
+        {
+          "Parameter": "log10_alpha",
+          "SourceColumn": "log10_alpha",
+          "N_VGDry_training_rows": 3979,
+          "N_numeric_available": 3979,
+          "N_used_for_prior": 3979,
+          "N_masked_or_missing": 0
+        },
+        {
+          "Parameter": "n",
+          "SourceColumn": "n",
+          "N_VGDry_training_rows": 3979,
+          "N_numeric_available": 3979,
+          "N_used_for_prior": 3979,
+          "N_masked_or_missing": 0
+        },
+        {
+          "Parameter": "tau",
+          "SourceColumn": "tau",
+          "N_VGDry_training_rows": 3979,
+          "N_numeric_available": 376,
+          "N_used_for_prior": 376,
+          "N_masked_or_missing": 3603
+        }
+      ]
+    }
+  },
+  "uncertainty": {
+    "new_prediction": "10-member deep-ensemble mean +/- 1.96 SD (model/epistemic ensemble spread)",
+    "test_metrics": "Group_ID cluster bootstrap, 1000 repetitions"
+  },
+  "prediction_grid": [
+    -2.0,
+    7.0,
+    0.05
+  ],
+  "plot_ranges": {
+    "theta": [
+      0.0,
+      0.6,
+      0.1
+    ],
+    "pF": [
+      -2.0,
+      7.0,
+      1.0
+    ],
+    "log10_K_cm_d": [
+      -10.0,
+      4.0,
+      2.0
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+# Rebuilding data/models and running the equivalence tests
+-r requirements.txt
+torch>=2.1           # tools/export_models.py and tests (legacy/ptf_core.py)
+scikit-learn>=1.3
+joblib
+geopandas>=0.14
+rio-cogeo
+pytest

@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.nbi
+*.nbc
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+*.tmp.tif
+.DS_Store
+Thumbs.db

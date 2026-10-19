@@ -1,0 +1,6 @@
+.git
+legacy
+tests
+**/__pycache__
+**/*.pt
+**/*.joblib

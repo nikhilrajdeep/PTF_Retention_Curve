@@ -1,0 +1,18 @@
+{
+  "config": {
+    "hidden": 128,
+    "layers": 2,
+    "activation": "relu",
+    "dropout": 0.05,
+    "lr": 0.009380102715483774,
+    "weight_decay": 7.939658730530185e-07,
+    "scheduler": "none",
+    "theta_scale": 0.04,
+    "dry_weight": 10.0,
+    "curve_mix": 0.25,
+    "lambda_ksat": 0.5,
+    "lambda_kh": 0.1,
+    "lambda_prior": 0.005
+  },
+  "final_epochs": 100
+}
