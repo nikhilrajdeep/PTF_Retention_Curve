@@ -461,7 +461,7 @@ class Ensemble:
         Returns dict:
           points_mean, points_sd (U, n_points)  ensemble mean / SD of theta
           paw_mean, paw_sd       (U,)           if two points (FC, PWP) given
-          log10ks_mean           (U,)
+          log10ks_mean, log10ks_sd (U,)  ensemble mean / SD of log10 Ksat
           curve_theta, curve_log10k (M, n_curve)  weighted area mean per member
           curve_theta_var        (M, n_curve)   weighted variance across pixels
         """
@@ -481,6 +481,7 @@ class Ensemble:
         pts_sq = np.zeros((U, nP), np.float64)
         paw_sq = np.zeros(U, np.float64)
         lks_sum = np.zeros(U, np.float64)
+        lks_sq = np.zeros(U, np.float64)
         curve_th = np.zeros((M, nC))
         curve_t2 = np.zeros((M, nC))
         curve_lk = np.zeros((M, nC))
@@ -529,6 +530,7 @@ class Ensemble:
                 d = pts[:, 0] - pts[:, 1]
                 paw_sq += d * d
             lks_sum += p["log10_ksat"]
+            lks_sq += p["log10_ksat"].astype(np.float64) ** 2
             if progress is not None:
                 progress((k + 1) / M)
 
@@ -538,6 +540,8 @@ class Ensemble:
                    points_sd=np.sqrt(np.maximum(pts_sq / M - mean_pts ** 2, 0) * corr
                                      ).astype(np.float32),
                    log10ks_mean=(lks_sum / M).astype(np.float32),
+                   log10ks_sd=np.sqrt(np.maximum(lks_sq / M - (lks_sum / M) ** 2, 0) * corr
+                                      ).astype(np.float32),
                    curve_theta=curve_th.astype(np.float32),
                    curve_theta_var=np.maximum(curve_t2 - curve_th ** 2, 0),
                    curve_log10k=curve_lk.astype(np.float32))

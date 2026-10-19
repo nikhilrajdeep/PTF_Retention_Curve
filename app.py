@@ -6,7 +6,7 @@ Streamlit app (works in any modern browser: phone, tablet, laptop).
 
   Tab 1  Single soil      type sand/silt/clay (+BD, OC) -> SWRC, K(theta), Ksat,
                           FC, PWP, PAW and the fitted hydraulic parameters
-  Tab 2  SOLUS maps       county / drawn area / point anywhere in Florida ->
+  Tab 2  Raster Predictioncounty / drawn area / point anywhere in Florida ->
                           FC, PWP, PAW, Ksat maps + area-averaged curves
   Tab 3  Models & method  accuracy of the 12 ensembles and how the app works
 
@@ -285,6 +285,7 @@ def run_area(fam, iset, depth, geom_json, label, pf_fc, pf_pwp, exact_curves):
         paw=raster.scatter(maps["paw_mean"], inp),
         paw_sd=raster.scatter(maps["paw_sd"], inp),
         ksat=raster.scatter(10 ** maps["log10ks_mean"], inp),
+        ksat_sd=raster.scatter(maps["log10ks_sd"], inp),
         curve_theta=cur["curve_theta"], curve_log10k=cur["curve_log10k"],
         n_valid=inp.n_valid, n_unique=len(inp.counts), curve_pixels=n_used,
         curve_exact=exact, curve_se=se, diagnostics=inp.diagnostics,
@@ -303,7 +304,8 @@ def geotiff_zip(res, tag):
                           ("pwp", "Wilting point (cm3 cm-3)"),
                           ("paw", "Plant-available water (cm3 cm-3)"),
                           ("paw_sd", "PAW ensemble SD (cm3 cm-3)"),
-                          ("ksat", "Saturated hydraulic conductivity (cm d-1)")):
+                          ("ksat", "Saturated hydraulic conductivity (cm d-1)"),
+                          ("ksat_sd", "log10 Ksat ensemble SD (log10 cm d-1)")):
             z.writestr(f"{key.upper()}_{tag}.tif",
                        raster.to_geotiff_bytes(res[key], aoi_like, res["crs"], desc))
     return buf.getvalue()
@@ -345,10 +347,18 @@ def show_area_result(res, fam, iset, depth, label, pf_fc, pf_pwp):
     st.caption(f"{title} — {label}. FC, PWP and PAW share one colour scale "
                "(2nd–98th percentile); Ksat has its own.")
 
-    with st.expander("PAW uncertainty map (ensemble SD)"):
-        st.plotly_chart(plots.map_figure(res["paw_sd"], "PAW ensemble SD", "θ",
-                                         plots.SEQ_SD),
-                        use_container_width=True, config=plots.CONFIG)
+    with st.expander("Uncertainty maps (ensemble SD across the 10 members)"):
+        u = st.columns(2)
+        pct = lambda m: [float(v) for v in np.nanpercentile(m, [2, 98])]
+        u[0].plotly_chart(plots.map_figure(res["paw_sd"], "PAW ensemble SD", "θ",
+                                           plots.SEQ_SD, *pct(res["paw_sd"])),
+                          use_container_width=True, config=plots.CONFIG)
+        u[1].plotly_chart(plots.map_figure(res["ksat_sd"], "log₁₀ Ksat ensemble SD",
+                                           "log₁₀ cm d⁻¹", plots.SEQ_SD, *pct(res["ksat_sd"]),
+                                           fmt=".3f"),
+                          use_container_width=True, config=plots.CONFIG)
+        st.caption("Ksat is predicted in log space, so its spread is shown as the SD of "
+                   "log₁₀Ksat (0.1 ≈ ±26 % around the mean Ksat).")
 
     st.markdown("##### Area-averaged curves")
     pf = core.pf_grid(*SWRC_PF)
@@ -367,24 +377,11 @@ def show_area_result(res, fam, iset, depth, label, pf_fc, pf_pwp):
 
     summ = pd.DataFrame({
         "Variable": ["Field capacity", "Wilting point", "Plant-available water",
-                     "PAW ensemble SD", "Ksat (cm d⁻¹)"],
-        "Mean": [np.nanmean(res[k]) for k in ("fc", "pwp", "paw", "paw_sd", "ksat")],
-        "SD across pixels": [np.nanstd(res[k]) for k in ("fc", "pwp", "paw", "paw_sd", "ksat")],
+                     "PAW ensemble SD", "Ksat (cm d⁻¹)", "log₁₀Ksat ensemble SD"],
+        "Mean": [np.nanmean(res[k]) for k in ("fc", "pwp", "paw", "paw_sd", "ksat", "ksat_sd")],
+        "SD across pixels": [np.nanstd(res[k]) for k in ("fc", "pwp", "paw", "paw_sd", "ksat", "ksat_sd")],
     }).round(4)
     st.dataframe(summ, hide_index=True, use_container_width=True)
-
-    diag = pd.DataFrame(res["diagnostics"])
-    bad = diag[diag.OK == "no"].Feature.tolist()
-    with st.expander("Input layers reaching the model" + ("  ⚠ out of training range" if bad else ""),
-                     expanded=bool(bad)):
-        st.dataframe(diag, hide_index=True, use_container_width=True)
-        if res["texture_sum"]:
-            lo, med, hi = res["texture_sum"]
-            st.caption(f"SOLUS sand + silt + clay ranged {lo:.0f}–{hi:.0f} % (median {med:.0f} %) "
-                       "before each pixel was rescaled to 100 %. Values above are after rescaling.")
-        if bad:
-            st.warning("More than 1 % of pixels fall outside the training range for: "
-                       + ", ".join(bad) + ". Treat those pixels with caution.")
 
     tag = f"{run_key(fam, iset)}_{depth}cm_{label.replace(' ', '_')}"
     curves = pd.DataFrame({"pF": pf, "theta_mean": th_m, "theta_lo": th_lo,
@@ -479,7 +476,7 @@ def spatial_tab():
         from streamlit_folium import st_folium
         is_point = mode == "Pick a point"
         fmap = folium.Map(location=[(minlat + maxlat) / 2, (minlon + maxlon) / 2],
-                          zoom_start=6, tiles="CartoDB positron", control_scale=True)
+                          zoom_start=6, tiles="OpenStreetMap", control_scale=True)
         _, _, gwgs = load_counties()
         folium.GeoJson(gwgs, name="Counties",
                        style_function=lambda f: dict(color="#64748b", weight=0.7, fillOpacity=0),
@@ -563,19 +560,12 @@ trained on closed compositions; SOLUS layers are not). Depth is a model input.
 **Spatial data** — SOLUS 100 m soil-property maps for Florida (5–100 cm),
 stored as Cloud-Optimized GeoTIFFs on one grid.
 
-##### Why the maps are fast
-1. Only the tiles that touch the chosen area are read (COG windowed reads).
-2. Pixels with identical inputs are computed once (exact de-duplication).
-3. The physics runs in compiled, multithreaded kernels; maps need only the
-   two retention points, so they are ready first.
-4. Area-averaged curves use every pixel up to 20 000 unique soils, otherwise a
-   random pixel sample with its standard error shown (tick *Exact* for all).
-5. Results are cached — repeating a county or changing tabs is instant.
 """)
     df = model_metrics()
     if len(df):
-        st.markdown("##### Independent test-set accuracy (cluster bootstrap, 95 % CI)")
-        task = st.radio("Target", ["SWRC_theta", "K(h)_log10", "Ksat_log10"], horizontal=True,
+        st.markdown("**Model validation** — accuracy on the independent test set.")
+        task = st.radio("Model validation", ["SWRC_theta", "K(h)_log10", "Ksat_log10"],
+                        horizontal=True, label_visibility="collapsed",
                         format_func={"SWRC_theta": "θ (SWRC)", "K(h)_log10": "log₁₀K(h)",
                                      "Ksat_log10": "log₁₀Ksat"}.get, key="a_task")
         t = df[df.Task == task].pivot_table(index=["Model", "Inputs"], columns="Metric",
@@ -590,7 +580,7 @@ def main():
     st.title("💧 Inverse-PTF Explorer")
     st.caption("Soil-water retention, hydraulic conductivity and plant-available water from "
                "physics-constrained deep-ensemble pedotransfer functions — for one soil or any area in Florida.")
-    t1, t2, t3 = st.tabs(["🧪 Single soil", "🗺️ SOLUS maps", "📘 Models & method"])
+    t1, t2, t3 = st.tabs(["🧪 Single soil", "🗺️ Raster Prediction", "📘 Models & method"])
     with t1:
         manual_tab()
     with t2:

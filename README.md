@@ -9,7 +9,7 @@
 
 The app runs in any modern browser — phone, tablet or laptop. Give it sand, silt and clay (and, optionally, bulk density and organic carbon) and it returns the full soil-water retention curve (SWRC), the unsaturated hydraulic conductivity curve K(θ), saturated hydraulic conductivity (Ksat), field capacity (FC), permanent wilting point (PWP) and plant-available water (PAW), each with an uncertainty band. On the map tab it does the same for every 100 m pixel of a county, a drawn area or a single point, using the SOLUS soil-property maps.
 
-| Map tab (laptop) | Phone |
+| Raster Prediction tab (laptop) | Phone |
 |---|---|
 | ![maps](docs/screenshot_maps.jpg) | ![phone](docs/screenshot_phone.jpg) |
 
@@ -20,7 +20,7 @@ The app runs in any modern browser — phone, tablet or laptop. Give it sand, si
 | Tab | Input | Output |
 |---|---|---|
 | **Single soil** | Sand, silt, clay (%), and bulk density (g cm⁻³) and/or organic carbon (%) when the chosen model uses them, plus depth | SWRC and K(θ) curves with an ensemble band, FC, PWP, PAW, Ksat, and the table of fitted hydraulic parameters (θr, θs, α, n, Ksat, and τ or ω, λ). CSV download. |
-| **SOLUS maps** | A county, a drawn polygon/rectangle, a clicked point, or a latitude/longitude; one of five depths (5, 15, 30, 60, 100 cm) | Maps of FC, PWP, PAW and Ksat, a PAW-uncertainty map, area-averaged SWRC and K(θ), an AOI summary table and an input-range check. GeoTIFF (zip) and CSV downloads. |
+| **Raster Prediction** | A county, a drawn polygon/rectangle, a clicked point, or a latitude/longitude; one of five depths (5, 15, 30, 60, 100 cm) | Maps of FC, PWP, PAW and Ksat, uncertainty maps (ensemble SD) for PAW and log₁₀Ksat, area-averaged SWRC and K(θ) with PAW shaded, and an AOI summary table. GeoTIFF (zip) and CSV downloads. |
 | **Models & method** | — | A short description of the models and the independent test-set accuracy of all 12 ensembles. |
 
 The user chooses an **input set** and a **model family**; the app loads the matching ensemble and asks only for the inputs that model was trained on.
@@ -61,7 +61,7 @@ Each family is trained with four input sets — **SSC** (sand, silt, clay), **SS
 3. **Physics layer.** The bounded parameters feed the retention and conductivity equations of the chosen family, evaluated in log space for numerical stability. The loss is computed on the curves (θ on the SWRC, log₁₀K on K(h), and log₁₀Ksat), with a Huber penalty, extra weight on the dry end, and a mix of point-wise and curve-wise normalisation. A weak prior towards curve-fitted parameters controls equifinality where it is used.
 4. **Uncertainty.** Ten networks with different random seeds form a deep ensemble. The app shows the ensemble mean ± 1 SD (about 68 %); this is model (epistemic) spread, not a calibrated predictive interval. Test metrics use a 1000-repetition cluster bootstrap over `Group_ID`.
 5. **Inputs at prediction time.** Sand, silt and clay are rescaled to sum to 100 % per soil/pixel (the models were trained on closed compositions; SOLUS layers are not). The app reports what fraction of an area falls outside the training range of each input.
-6. **Derived quantities.** FC is θ at pF 2.0 (sandy soils, default) or pF 2.54; PWP is θ at pF 4.2 (adjustable); PAW = FC − PWP.
+6. **Derived quantities.** FC is θ at pF 2.0 (sandy soils, default) or pF 2.54; PWP is θ at pF 4.2 (adjustable); PAW = FC − PWP. Uncertainty maps show, for every pixel, the SD of PAW and of log₁₀Ksat across the 10 ensemble members.
 
 ## Spatial data
 

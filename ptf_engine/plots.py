@@ -4,7 +4,8 @@ ptf_engine.plots -- Plotly figures (interactive, responsive on phones/tablets).
 Conventions kept from the original app:
   SWRC  : x = theta (0-0.7), y = pF (-2..7); band drawn horizontally in theta
   K     : x = theta (0-0.7), y = log10 K (-10..7)
-  FC green marker, PWP red marker, PAW shaded light blue.
+  FC green marker, PWP red marker, PAW shaded light blue from the x-axis
+  up to the curve between theta_PWP and theta_FC.
 """
 from __future__ import annotations
 
@@ -62,16 +63,23 @@ def _hband(fig, y, lo, hi, color, name):
 def swrc_figure(pf, mean, lo, hi, band_label, title, fc=None, pwp=None):
     """fc / pwp: (theta, pF) tuples or None."""
     fig = go.Figure()
-    if fc and pwp and np.isfinite([*fc, *pwp]).all() and pwp[1] > fc[1]:
-        seg = (pf >= fc[1]) & (pf <= pwp[1])
-        y = np.concatenate([[fc[1]], pf[seg], [pwp[1]]])
-        x = np.concatenate([[fc[0]], mean[seg], [pwp[0]]])
-        x = np.maximum(x, pwp[0])
+    if fc and pwp and np.isfinite([*fc, *pwp]).all() and pwp[1] > fc[1] and fc[0] > pwp[0]:
+        # PAW = water held between theta_PWP and theta_FC.  Shade the whole
+        # column between the two water contents, from the x-axis up to the
+        # curve (as in the classic textbook figure), with drop lines.
+        y0 = PF_LIMITS[0]
+        seg = (pf > fc[1]) & (pf < pwp[1])
+        cx = np.concatenate([[fc[0]], mean[seg], [pwp[0]]])      # FC -> PWP along curve
+        cy = np.concatenate([[fc[1]], pf[seg], [pwp[1]]])
         fig.add_trace(go.Scatter(
-            x=np.concatenate([x, np.full_like(x, pwp[0])[::-1]]),
-            y=np.concatenate([y, y[::-1]]), fill="toself", fillcolor=PAW_FILL,
-            line=dict(width=0), hoverinfo="skip",
+            x=np.concatenate([[pwp[0]], cx[::-1], [fc[0]]]),
+            y=np.concatenate([[y0], cy[::-1], [y0]]),
+            fill="toself", fillcolor=PAW_FILL, line=dict(width=0), hoverinfo="skip",
             name=f"PAW = {fc[0] - pwp[0]:.3f}"))
+        for pt, color in ((fc, FC_GREEN), (pwp, PWP_RED)):
+            fig.add_trace(go.Scatter(x=[pt[0], pt[0]], y=[y0, pt[1]], mode="lines",
+                                     line=dict(color=color, width=1.4, dash="dash"),
+                                     hoverinfo="skip", showlegend=False))
     _hband(fig, pf, lo, hi, BLUE_BAND, band_label)
     fig.add_trace(go.Scatter(x=mean, y=pf, mode="lines", line=dict(color=BLUE, width=2.2),
                              name="Predicted SWRC",
