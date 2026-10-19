@@ -127,7 +127,7 @@ docker run -p 8501:8501 ptf-explorer
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PTF_DATA` | `data/solus_cog` | Folder **or https URL** of the COGs. GDAL reads COG tiles over HTTP range requests, so the data can live on any static host (S3, Zenodo, a GitHub release) without being downloaded. |
+| `PTF_DATA` | `data/solus_cog`, else `../Soil_Properties_Maps_COG` | Folder **or https URL** of the COGs. GDAL reads COG tiles over HTTP range requests, so the data can live on any static host (S3, Zenodo, a GitHub release) without being downloaded. |
 | `PTF_MODEL_DIR` | `models/ptf_model_bundle` | Folder with the 12 exported ensembles |
 | `PTF_CURVE_PIXELS` | `20000` | Unique-soil threshold for exact area curves |
 

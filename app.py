@@ -36,7 +36,20 @@ from ptf_engine.core import FEATURE_LABELS, INPUT_SETS, MODEL_FAMILIES, run_key
 
 ROOT = Path(__file__).resolve().parent
 MODEL_ROOT = Path(os.environ.get("PTF_MODEL_DIR", ROOT / "models" / "ptf_model_bundle"))
-DATA_LOC = os.environ.get("PTF_DATA", str(ROOT / "data" / "solus_cog"))
+
+
+def _default_data() -> str:
+    """PTF_DATA if set; else data/solus_cog in the repo; else a sibling folder
+    named Soil_Properties_Maps_COG (the layout used next to the original data)."""
+    if os.environ.get("PTF_DATA"):
+        return os.environ["PTF_DATA"]
+    for cand in (ROOT / "data" / "solus_cog", ROOT.parent / "Soil_Properties_Maps_COG"):
+        if (cand / "catalog.json").exists():
+            return str(cand)
+    return str(ROOT / "data" / "solus_cog")
+
+
+DATA_LOC = _default_data()
 COUNTIES_5070 = ROOT / "data" / "counties" / "fl_counties_epsg5070.geojson"
 COUNTIES_WGS84 = ROOT / "data" / "counties" / "fl_counties_wgs84.geojson"
 CURVE_PIXELS = int(os.environ.get("PTF_CURVE_PIXELS", 20_000))
