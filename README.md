@@ -59,7 +59,7 @@ Each family is trained with four input sets — **SSC** (sand, silt, clay), **SS
 1. **Training data.** Measured soil-water retention and hydraulic conductivity data were split into development and independent test sets by `Group_ID` (a grouped split), and all test metrics are computed on the held-out groups.
 2. **Network.** A fully connected network (2–4 hidden layers; ReLU or tanh; width, depth, learning rate and loss weights tuned with Optuna) maps min–max-scaled inputs to raw outputs. Each raw output passes through a scaled sigmoid onto its physical range (for example, θs is kept above θr + a minimum gap, and α, n and Ksat are bounded in log space). The network cannot produce a non-physical parameter set.
 3. **Physics layer.** The bounded parameters feed the retention and conductivity equations of the chosen family, evaluated in log space for numerical stability. The loss is computed on the curves (θ on the SWRC, log₁₀K on K(h), and log₁₀Ksat), with a Huber penalty, extra weight on the dry end, and a mix of point-wise and curve-wise normalisation. A weak prior towards curve-fitted parameters controls equifinality where it is used.
-4. **Uncertainty.** Ten networks with different random seeds form a deep ensemble. The app shows the ensemble mean ± 1 SD (about 68 %); this is model (epistemic) spread, not a calibrated predictive interval. Test metrics use a 1 000-repetition cluster bootstrap over `Group_ID`.
+4. **Uncertainty.** Ten networks with different random seeds form a deep ensemble. The app shows the ensemble mean ± 1 SD (about 68 %); this is model (epistemic) spread, not a calibrated predictive interval. Test metrics use a 1000-repetition cluster bootstrap over `Group_ID`.
 5. **Inputs at prediction time.** Sand, silt and clay are rescaled to sum to 100 % per soil/pixel (the models were trained on closed compositions; SOLUS layers are not). The app reports what fraction of an area falls outside the training range of each input.
 6. **Derived quantities.** FC is θ at pF 2.0 (sandy soils, default) or pF 2.54; PWP is θ at pF 4.2 (adjustable); PAW = FC − PWP.
 
@@ -72,29 +72,6 @@ SOLUS 100 m soil-property maps for Florida (Nauman et al., 2024) — sand, silt,
 * the physical scale factor is written into each band's metadata (BD × 0.01 → g cm⁻³, SOC × 0.001 → %) and listed in `catalog.json`, so it never has to be guessed.
 
 `tools/build_cogs.py` rebuilds them from the original GeoTIFFs and leaves those untouched.
-
-## Performance
-
-The original Streamlit app read and warped the whole of Florida (67 million pixels per layer) for every run, kept about 1 GB of arrays in Streamlit's cache, ran the network once for the maps and again for the curves, and evaluated 181 pF points for every pixel through PyTorch. The new engine changes five things:
-
-| Step | Before | Now |
-|---|---|---|
-| Reading inputs | warp the full state, every layer (7–11 s, ~1 GB cached) | windowed COG read of the tiles touching the area (0.02–0.2 s, a few MB) |
-| Pixels evaluated | every pixel | every **unique input combination** once, results scattered back — exact (3 114 instead of 239 967 for SSC in Alachua County) |
-| Physics | PyTorch, separate passes for maps and curves | fused, multithreaded Numba kernels; the maps need only two pF points |
-| Area-averaged curves | 181 pF × every pixel | every pixel up to 20 000 unique soils; above that, a 20 000-pixel random sample with its standard error shown (tick *Exact* to use all) |
-| Repeat requests | recomputed | cached |
-| Runtime dependencies | PyTorch, scikit-learn, geopandas, matplotlib | NumPy, rasterio, Plotly (+ Numba); about 1/10 of the install size |
-
-Alachua County (≈ 240 000 pixels, 5 cm), timed on the same 2-core machine:
-
-| Ensemble | Original app | New: maps ready | New: everything (default) | New: all-pixel curves |
-|---|---|---|---|---|
-| Classic VG / SSC | 27.6 s | **0.2 s** | **0.6 s** | 0.6 s |
-| Enhanced VG / SSCBD | 37.3 s | **0.4 s** | **1.2 s** | 2.9 s |
-| PDI / SSCBDOC | 62.4 s | **2.2 s** | **5.5 s** | 26.6 s |
-
-The numbers are identical to the original code: across all 239 967 pixels the largest difference is 2 × 10⁻⁷ cm³ cm⁻³ for FC/PWP and 1.4 × 10⁻⁶ for log₁₀Ksat (float32 rounding). `tests/` checks this for all 12 ensembles on every push.
 
 ## Run it
 
